@@ -51,3 +51,20 @@ query path, or status code, but we're just going to do this for the example:
 ```console
 docker-compose down -v
 ```
+
+
+## Helpful Links
+
+* Grafana UI - http://localhost:3000
+
+  * Loki in Grafana - http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D
+
+  * Prometheus in Grafana - http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Prometheus%22,%7B%22exemplar%22:true%7D%5D
+
+  * Tempo in Grafana - http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22exemplar%22:true%7D%5D
+
+    * (displays "Query error: failed to get trace with id: Status: 404 Not Found Body: 404 page not found" until you search via `TraceID`)
+
+* Prometheus UI - http://localhost:9090
+
+* Tempo UI - http://localhost:9090
