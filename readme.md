@@ -46,7 +46,9 @@ For the following examples, you can generate sample traces by:
 
 **Metrics -> Traces**
 
-DESCRIBE USING EXEMPLARS
+Prometheus' exemplars are a relatively new feature.  In order to use them, your metrics must have the `traceId` included in each `observation`.  See [this](https://vbehar.medium.com/using-prometheus-exemplars-to-jump-from-metrics-to-traces-in-grafana-249e721d4192) for how to configure your metrics with support for exemplars.
+
+`./grafana-datasources.yaml` and `./docker-compose.yaml` have already been configured to support exemplars, after the above prerequisite.
 
 **Traces -> Logs**
 
@@ -86,7 +88,7 @@ Let's say you have another project (`YourApp`), and you wish to implement Metric
 
   * Using a library like [this](https://github.com/prometheus/client_ruby), for example
 
-  * DESCRIBE HOW TO UPDATE `ObservabilityStack` TO SCRAPE THE URL
+  * Modify `./prometheus.yaml` with a scrape config to target your app for pulling the `/metrics` endpoint
 
 **Logs**
 
