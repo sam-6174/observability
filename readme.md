@@ -38,7 +38,7 @@ observability_vector_1       /usr/bin/vector -c /etc/ve ...   Up      0.0.0.0:83
 ---
 ## Example Usage
 
-**Logs -> Metrics**
+**Logs -> Traces**
 
 Open [Loki in Grafana](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) and **query Loki a few times to generate some traces** (this setup does not use the synthetic load generator and all traces are generated from Loki). Something like the below works, but feel free to explore other options!
 
