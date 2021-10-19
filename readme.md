@@ -54,7 +54,17 @@ DESCRIBE USING EXEMPLARS
 
 2) Query for the above value in [Tempo](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22exemplar%22:true%7D%5D)
 
-SCREENSHOT HERE
+3) You have a couple options for how to navigate to Loki logs from Tempo traces:
+
+  * A) Simply view the logs contained within each trace:
+
+  ![Tempo logs](tempo-logs.png)
+
+  * B) Use Grafana's `tracesToLogs` feature, which provides a "clickable log icon" on each trace, which would then take you the relevant logs in Loki.  This requires all *traces* to be *tagged* with a value that points to the value of a *label* in your *logs*.  In this repo, `./grafana-datasources.yaml` is configured to use `tracesToLogs.tags=['container_name']`, which in turn points to the log label of `container_name` configured in `./vector.yaml`
+
+    * See [this](https://grafana.com/docs/grafana/latest/explore/trace-integration/) for more info about the `tracesToLogs` feature
+
+    * See [this](https://github.com/grafana/tempo/issues/735#issuecomment-899335996) for more info about configuring the feature
 
 **Logs -> Traces**
 
