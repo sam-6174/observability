@@ -1,0 +1,25 @@
+sources:  # https://vector.dev/docs/reference/configuration/sources/docker_logs/
+  docker:
+    type: docker_logs
+    exclude_containers:
+      - "vector-"
+      - "loki-"
+sinks:  # https://vector.dev/docs/reference/configuration/sinks/loki/
+  loki:
+    type: loki
+    inputs:
+      - docker
+    endpoint: http://loki:3100
+    encoding:
+      codec: text
+    healthcheck:
+      enabled: false
+    out_of_order_action: drop
+    labels:  # https://vector.dev/docs/reference/configuration/sources/docker_logs/#examples-dummy-logs
+      container_id: "{{ container_id }}"
+      container_name: "{{ container_name }}"
+      container_created_at: "{{ container_created_at }}"
+      image: "{{ image }}"
+      host: "{{ host }}"
+api:
+  enabled: true
