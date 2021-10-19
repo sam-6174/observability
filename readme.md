@@ -1,58 +1,23 @@
-## Loki Derived Fields
-This example presents a complete setup using Loki to process all container logs, and linking between the extracted traceIDs and tempo.
+## Run the Stack
 
-1. First we have to install the Loki docker driver.  This allows applications in our docker-compose to ship their logs
-to Loki.
+`docker-compose up -d` to start the observability stack
 
-```console
-docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
-```
-
-2. Next start up the Loki stack.
-
-```console
-docker-compose up -d
-```
-
-At this point, the following containers should be spun up -
-
-```console
-docker-compose ps
-```
-```
-            Name                          Command               State            Ports
-------------------------------------------------------------------------------------------------
-observability_grafana_1       /run.sh                          Up      0.0.0.0:3000->3000/tcp
-observability_loki_1          /usr/bin/loki -config.file ...   Up      0.0.0.0:3100->3100/tcp
-observability_prometheus_1    /bin/prometheus --config.f ...   Up      0.0.0.0:9090->9090/tcp
-observability_tempo_1         /tempo -storage.trace.back ...   Up      0.0.0.0:32774->14268/tcp
-```
-
-3. Navigate to [Grafana](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) and **query Loki a few times to generate some traces** (this setup does not use the synthetic load generator and all traces are generated from Loki).
-Something like the below works, but feel free to explore other options!
+`docker-compose ps` shows current Process Status:
 
 ```
-{container_name="observability_loki_1"}
+           Name                         Command               State                    Ports                  
+--------------------------------------------------------------------------------------------------------------
+observability_grafana_1      /run.sh                          Up      0.0.0.0:3000->3000/tcp,:::3000->3000/tcp
+observability_loki_1         /usr/bin/loki -config.file ...   Up      0.0.0.0:3100->3100/tcp,:::3100->3100/tcp
+observability_prometheus_1   /bin/prometheus --config.f ...   Up      0.0.0.0:9090->9090/tcp,:::9090->9090/tcp
+observability_tempo_1        /tempo -config.file=/etc/t ...   Up      0.0.0.0:59026->14268/tcp                
+observability_vector_1       /usr/bin/vector -c /etc/ve ...   Up      0.0.0.0:8383->8383/tcp,:::8383->8383/tcp
 ```
 
-4. Now let's execute a query specifically looking for some trace ids.  In an operational scenario you would normally be using Loki to search for things like
-query path, or status code, but we're just going to do this for the example:
-
-```
-{container_name="observability_loki_1"} |= "traceID"
-```
-
-5. Drop down the log line and click the Tempo link to jump directly from logs to traces!
-
-![Tempo link](tempo-link.png)
-
-6. To stop the setup use -
-
-```console
-docker-compose down -v
-```
+`docker-compose down -v` to kill the observability stack
 
 
+---
 ## Helpful Links
 
 * Grafana UI - http://localhost:3000
@@ -68,3 +33,43 @@ docker-compose down -v
 * Prometheus UI - http://localhost:9090
 
 * Tempo UI - http://localhost:9090
+
+
+---
+## Example Usage
+
+**Logs -> Metrics**
+
+Open [Loki in Grafana](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) and **query Loki a few times to generate some traces** (this setup does not use the synthetic load generator and all traces are generated from Loki). Something like the below works, but feel free to explore other options!
+
+```
+{container_name="observability_loki_1"}
+```
+
+Drop down the log line and click the Tempo link to jump directly from logs to traces:
+
+![Tempo link](tempo-link.png)
+
+
+---
+## Configure `YourApp` to Push/Pull to/from this `ObservabilityStack`
+
+Let's say you have another project (`YourApp`), and you wish to implement Metrics/Logs/Traces using this `ObservabilityStack`
+
+**Metrics**
+
+* Prometheus works via a pull mechanism; expose a `/metrics` endpoint in `YourApp` that can be scraped by `ObservabilityStack`
+
+  * Using a library like [this](https://github.com/prometheus/client_ruby), for example
+
+**Logs**
+
+* Loki works "automagically" (assuming `YourApp` is running in Docker)
+
+  * The `vector` service in `./docker-compose.yaml` is configured to capture the stdout/stderr for any running Docker containers, and it will subsequently push them to `http://loki:3100/`
+
+**Traces**
+
+* Tempo works via a push mechanism; configure `YourApp` to push traces to `ObservabilityStack` @ `http://tempo:14268/api/traces`
+
+  * Using a library like [this](https://github.com/salemove/zipkin-ruby-opentracing), for example
