@@ -32,21 +32,35 @@ observability_vector_1       /usr/bin/vector -c /etc/ve ...   Up      0.0.0.0:83
 
 * Prometheus UI - http://localhost:9090
 
-* Tempo UI - http://localhost:9090
-
 
 ---
 ## Example Usage
 
+For the following examples, you can generate sample traces by:
+
+  * Opening [Loki](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D)
+
+  * Querying Loki a few times to generate some traces (this setup does not use a synthetic load generator and all traces are generated from Loki)
+
+    * "Run Query" of something like `{container_name="observability_loki_1"}` (where it says "enter a Loki query")
+
+**Metrics -> Traces**
+
+DESCRIBE USING EXEMPLARS
+
+**Traces -> Logs**
+
+1) Find a `traceId` value via [Loki](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) query of `{container_name="observability_loki_1"} |= "traceId"`
+
+2) Query for the above value in [Tempo](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22exemplar%22:true%7D%5D)
+
+SCREENSHOT HERE
+
 **Logs -> Traces**
 
-Open [Loki in Grafana](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) and **query Loki a few times to generate some traces** (this setup does not use the synthetic load generator and all traces are generated from Loki). Something like the below works, but feel free to explore other options!
+1) Find a log with a `traceId` via [Loki](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) query of `{container_name="observability_loki_1"} |= "traceId"`
 
-```
-{container_name="observability_loki_1"}
-```
-
-Drop down the log line and click the Tempo link to jump directly from logs to traces:
+2) Drop down the log line and click the Tempo link to jump directly from logs to traces:
 
 ![Tempo link](tempo-link.png)
 
@@ -61,6 +75,8 @@ Let's say you have another project (`YourApp`), and you wish to implement Metric
 * Prometheus works via a pull mechanism; expose a `/metrics` endpoint in `YourApp` that can be scraped by `ObservabilityStack`
 
   * Using a library like [this](https://github.com/prometheus/client_ruby), for example
+
+  * DESCRIBE HOW TO UPDATE `ObservabilityStack` TO SCRAPE THE URL
 
 **Logs**
 
