@@ -32,7 +32,9 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    command: [ "--config.file=/etc/prometheus.yaml" ]
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --enable-feature=exemplar-storage
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     ports:
