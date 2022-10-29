@@ -9,6 +9,8 @@ services:
     volumes:
       - ./vector.yaml:/etc/vector/vector.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - observability-net
 
   tempo:
     image: grafana/tempo:latest
@@ -18,6 +20,8 @@ services:
       - ./tempo-data:/tmp/tempo
     ports:
       - "14268"  # jaeger ingest
+    networks:
+      - observability-net
 
   loki:
     image: grafana/loki:2.3.0
@@ -29,6 +33,8 @@ services:
       - JAEGER_ENDPOINT=http://tempo:14268/api/traces # send traces to Tempo
       - JAEGER_SAMPLER_TYPE=const
       - JAEGER_SAMPLER_PARAM=1
+    networks:
+      - observability-net
 
   prometheus:
     image: prom/prometheus:latest
@@ -39,6 +45,8 @@ services:
       - ./prometheus.yaml:/etc/prometheus.yaml
     ports:
       - "9090:9090"
+    networks:
+      - observability-net
 
   grafana:
     image: grafana/grafana:8.1.6
@@ -50,3 +58,9 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
       - "3000:3000"
+    networks:
+      - observability-net
+
+networks:
+  observability-net:
+    name: observability

@@ -84,6 +84,16 @@ Prometheus' exemplars are a relatively new feature.  In order to use them, your 
 
 Let's say you have another project (`YourApp`), and you wish to implement Metrics/Logs/Traces using this `ObservabilityStack`
 
+**Docker Network**
+
+* Ensure that the container of `YourApp` is on the same Docker [network](https://stackoverflow.com/a/38089080) as this `ObservabilityStack`
+
+* Do one of the following:
+
+  * Update `YourApp` to include the network of `observability`
+  
+  * Update `ObservabilityStack` by modifying the `name` of `observability-net` within `./docker-compose.yaml` to be the network used within `YourApp`
+
 **Metrics**
 
 * Prometheus works via a pull mechanism; expose a `/metrics` endpoint in `YourApp` that can be scraped by `ObservabilityStack`
