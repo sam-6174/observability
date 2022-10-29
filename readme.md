@@ -62,7 +62,7 @@ Prometheus' exemplars are a relatively new feature.  In order to use them, your 
 
   ![Tempo logs](tempo-logs.png)
 
-  * B) Use Grafana's `tracesToLogs` feature, which provides a "clickable log icon" on each trace, which would then take you the relevant logs in Loki.  This requires all *traces* to be *tagged* with a value that points to the value of a *label* in your *logs*.  In this repo, `./grafana-datasources.yaml` is configured to use `tracesToLogs.tags=['container_name']`, which in turn points to the log label of `container_name` configured in `./vector.yaml`
+  * B) Use Grafana's `tracesToLogs` feature, which provides a "clickable log icon" on each trace, which would then take you to the relevant logs in Loki.  This requires all *traces* to be *tagged* with a value that points to the value of a *label* in your *logs*.  In this repo, `./grafana-datasources.yaml` is configured to use `tracesToLogs.tags=['container_name']`, which in turn points to the log label of `container_name` configured in `./vector.yaml`
 
     * See [this](https://grafana.com/docs/grafana/latest/explore/trace-integration/) for more info about the `tracesToLogs` feature
 
