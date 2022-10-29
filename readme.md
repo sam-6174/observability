@@ -1,3 +1,5 @@
+Some of the config in this repo comes from the [examples](https://github.com/grafana/tempo/blob/dee08207802e2e748c5a2fde881094a062da10f2/example/docker-compose/loki/readme.md) by [Grafana Labs](https://github.com/grafana), and there are many helpful resources to be found there!
+
 ## Run the Stack
 
 `docker-compose up -d` to start the observability stack
@@ -20,17 +22,17 @@ observability_vector_1       /usr/bin/vector -c /etc/ve ...   Up      0.0.0.0:83
 ---
 ## Helpful Links
 
-* Grafana UI - http://localhost:3000
+* [Grafana UI](http://localhost:3000)
 
-  * Loki in Grafana - http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D
+  * [Loki in Grafana](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D)
 
-  * Prometheus in Grafana - http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Prometheus%22,%7B%22exemplar%22:true%7D%5D
+  * [Prometheus in Grafana](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Prometheus%22,%7B%22exemplar%22:true%7D%5D)
 
-  * Tempo in Grafana - http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22exemplar%22:true%7D%5D
+  * [Tempo in Grafana](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22exemplar%22:true%7D%5D)
 
     * (displays "Query error: failed to get trace with id: Status: 404 Not Found Body: 404 page not found" until you search via `TraceID`)
 
-* Prometheus UI - http://localhost:9090
+* [Prometheus UI](http://localhost:9090)
 
 
 ---
