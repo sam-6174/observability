@@ -32,21 +32,47 @@ observability_vector_1       /usr/bin/vector -c /etc/ve ...   Up      0.0.0.0:83
 
 * Prometheus UI - http://localhost:9090
 
-* Tempo UI - http://localhost:9090
-
 
 ---
 ## Example Usage
 
+For the following examples, you can generate sample traces by:
+
+  * Opening [Loki](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D)
+
+  * Querying Loki a few times to generate some traces (this setup does not use a synthetic load generator and all traces are generated from Loki)
+
+    * "Run Query" of something like `{container_name="observability_loki_1"}` (where it says "enter a Loki query")
+
+**Metrics -> Traces**
+
+Prometheus' exemplars are a relatively new feature.  In order to use them, your metrics must have the `traceId` included in each `observation`.  See [this](https://vbehar.medium.com/using-prometheus-exemplars-to-jump-from-metrics-to-traces-in-grafana-249e721d4192) for how to configure your metrics with support for exemplars.
+
+`./grafana-datasources.yaml` and `./docker-compose.yaml` have already been configured to support exemplars, after the above prerequisite.
+
+**Traces -> Logs**
+
+1) Find a `traceId` value via [Loki](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) query of `{container_name="observability_loki_1"} |= "traceId"`
+
+2) Query for the above value in [Tempo](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tempo%22,%7B%22exemplar%22:true%7D%5D)
+
+3) You have a couple options for how to navigate to Loki logs from Tempo traces:
+
+  * A) Simply view the logs contained within each trace:
+
+  ![Tempo logs](tempo-logs.png)
+
+  * B) Use Grafana's `tracesToLogs` feature, which provides a "clickable log icon" on each trace, which would then take you the relevant logs in Loki.  This requires all *traces* to be *tagged* with a value that points to the value of a *label* in your *logs*.  In this repo, `./grafana-datasources.yaml` is configured to use `tracesToLogs.tags=['container_name']`, which in turn points to the log label of `container_name` configured in `./vector.yaml`
+
+    * See [this](https://grafana.com/docs/grafana/latest/explore/trace-integration/) for more info about the `tracesToLogs` feature
+
+    * See [this](https://github.com/grafana/tempo/issues/735#issuecomment-899335996) for more info about configuring the feature
+
 **Logs -> Traces**
 
-Open [Loki in Grafana](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) and **query Loki a few times to generate some traces** (this setup does not use the synthetic load generator and all traces are generated from Loki). Something like the below works, but feel free to explore other options!
+1) Find a log with a `traceId` via [Loki](http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%7D%5D) query of `{container_name="observability_loki_1"} |= "traceId"`
 
-```
-{container_name="observability_loki_1"}
-```
-
-Drop down the log line and click the Tempo link to jump directly from logs to traces:
+2) Drop down the log line and click the Tempo link to jump directly from logs to traces:
 
 ![Tempo link](tempo-link.png)
 
@@ -61,6 +87,8 @@ Let's say you have another project (`YourApp`), and you wish to implement Metric
 * Prometheus works via a pull mechanism; expose a `/metrics` endpoint in `YourApp` that can be scraped by `ObservabilityStack`
 
   * Using a library like [this](https://github.com/prometheus/client_ruby), for example
+
+  * Modify `./prometheus.yaml` with a scrape config to target your app for pulling the `/metrics` endpoint
 
 **Logs**
 
